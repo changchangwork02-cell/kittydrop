@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kitty Drop — Game Design Document</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF3E8;
+    --cream-dark: #F0E6D0;
+    --sage: #B8D9B2;
+    --sage-dark: #8AB884;
+    --rose: #F4A8A8;
+    --rose-dark: #E07878;
+    --biscuit: #E8C9A0;
+    --ink: #2C2416;
+    --ink-soft: #4A3C2A;
+    --tomato: #E8604A;
+    --white: #FFFDF8;
+    --section-gap: 3rem;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    padding: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 20% 50%, rgba(244,168,168,0.15) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 30%, rgba(184,217,178,0.12) 0%, transparent 45%);
+  }
+
+  .header-tag {
+    font-family: 'DotGothic16', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--sage);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    position: relative;
+  }
+
+  header h1 {
+    font-family: 'DotGothic16', monospace;
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    color: var(--cream);
+    line-height: 1.1;
+    position: relative;
+    letter-spacing: 0.04em;
+  }
+
+  header h1 span {
+    color: var(--rose);
+  }
+
+  .header-hook {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #B8A898;
+    font-weight: 600;
+    font-style: italic;
+    position: relative;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .header-cats {
+    font-family: 'DotGothic16', monospace;
+    font-size: 1.8rem;
+    margin-top: 1.5rem;
+    letter-spacing: 0.3em;
+    position: relative;
+    color: var(--biscuit);
+  }
+
+  .meta-row {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .meta-pill {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 100px;
+    padding: 4px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--biscuit);
+  }
+
+  /* ── LAYOUT ── */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    margin-bottom: var(--section-gap);
+  }
+
+  .section-number {
+    font-family: 'DotGothic16', monospace;
+    font-size: 11px;
+    color: var(--sage-dark);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+  }
+
+  .section h2 {
+    font-family: 'DotGothic16', monospace;
+    font-size: 1.35rem;
+    color: var(--ink);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--cream-dark);
+    letter-spacing: 0.04em;
+  }
+
+  .section h2 .cat-icon {
+    font-size: 1.1rem;
+    margin-right: 0.4rem;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white);
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-title {
+    font-weight: 800;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin-bottom: 0.3rem;
+  }
+
+  .card p, .card li {
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .card ul {
+    padding-left: 1.25rem;
+  }
+
+  .card li {
+    margin-bottom: 0.2rem;
+  }
+
+  /* ── SINGLE HIGHLIGHT CARD ── */
+  .highlight-card {
+    background: var(--ink);
+    color: var(--cream);
+    border-radius: 14px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .highlight-card .card-title {
+    color: var(--sage);
+  }
+
+  .highlight-card p, .highlight-card li {
+    color: #C8BAA8;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .highlight-card ul {
+    padding-left: 1.25rem;
+  }
+
+  /* ── GRID ── */
+  .grid2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .grid3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+  }
+
+  /* ── BADGE ── */
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 9px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+
+  .b-rose { background: var(--rose); color: #6B1E1E; }
+  .b-sage { background: var(--sage); color: #1E4A1E; }
+  .b-biscuit { background: var(--biscuit); color: #5A3A10; }
+  .b-tomato { background: var(--tomato); color: #fff; }
+  .b-ink { background: var(--ink); color: var(--cream); }
+
+  /* ── DAY PLAN ── */
+  .day-plan {
+    border-left: 3px solid var(--sage-dark);
+    padding-left: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .day-plan.day2 { border-color: var(--rose-dark); }
+  .day-plan.day3 { border-color: var(--tomato); }
+
+  .day-label {
+    font-family: 'DotGothic16', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.05em;
+  }
+
+  .day-plan ul {
+    padding-left: 1.1rem;
+  }
+
+  .day-plan li {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    margin-bottom: 0.15rem;
+  }
+
+  /* ── CUT FEATURE ── */
+  .cut-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: var(--white);
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 10px;
+    margin-bottom: 0.6rem;
+  }
+
+  .cut-x {
+    width: 20px;
+    height: 20px;
+    background: var(--rose);
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 900;
+    color: #6B1E1E;
+    margin-top: 2px;
+  }
+
+  .cut-item p {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
+  .cut-item strong {
+    color: var(--ink);
+    font-weight: 800;
+  }
+
+  /* ── SWATCH ROW ── */
+  .swatch-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .swatch-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(44,36,22,0.15);
+  }
+
+  .swatch-label {
+    font-size: 10px;
+    color: var(--ink-soft);
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── LOOP FLOW ── */
+  .loop-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 0.5rem 0;
+  }
+
+  .loop-step {
+    background: var(--ink);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    font-family: 'DotGothic16', monospace;
+    letter-spacing: 0.03em;
+  }
+
+  .loop-arrow {
+    font-size: 14px;
+    color: var(--sage-dark);
+    padding: 0 6px;
+    font-weight: 900;
+  }
+
+  /* ── SCOPE TABLE ── */
+  .scope-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .scope-table th {
+    text-align: left;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 0 0 8px;
+    border-bottom: 1.5px solid var(--cream-dark);
+  }
+
+  .scope-table td {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--cream-dark);
+    color: var(--ink-soft);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .scope-table td:first-child {
+    font-weight: 800;
+    color: var(--ink);
+    width: 38%;
+    padding-right: 1rem;
+  }
+
+  .scope-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: 'DotGothic16', monospace;
+    font-size: 12px;
+    color: #A0907A;
+    letter-spacing: 0.1em;
+    border-top: 1.5px solid var(--cream-dark);
+  }
+
+  /* ── DIVIDER PAWS ── */
+  .paw-divider {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--biscuit);
+    letter-spacing: 0.5rem;
+    margin: 0.5rem 0 1.5rem;
+    font-family: 'DotGothic16', monospace;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 2rem 1rem 2rem; }
+    main { padding: 2rem 1rem 4rem; }
+    .loop-flow { gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="header-tag">Game Design Document · v1.0</p>
+  <h1>KITTY <span>DROP</span></h1>
+  <p class="header-hook">"Dodge the falling cats. Don't get squished. How long can you last?"</p>
+  <div class="header-cats">≽^•⩊•^≼ &nbsp; ≽^•⩊•^≼ &nbsp; ≽^•⩊•^≼</div>
+  <div class="meta-row">
+    <span class="meta-pill">Beginner-Friendly</span>
+    <span class="meta-pill">1-Button Control</span>
+    <span class="meta-pill">Pixel Art · 16px</span>
+    <span class="meta-pill">1–3 Day Build</span>
+    <span class="meta-pill">Endless Arcade</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- 1. GAME TITLE -->
+  <div class="section">
+    <p class="section-number">Section 01</p>
+    <h2>Game Title</h2>
+    <div class="highlight-card">
+      <div class="card-title">Official Title</div>
+      <p style="font-family:'DotGothic16',monospace; font-size:1.6rem; color: var(--cream); letter-spacing:0.05em;">KITTY DROP</p>
+      <p style="margin-top:0.5rem;">Genre: One-button arcade · Platform: Browser (HTML5) · Target: Beginner prototype, itch.io release</p>
+    </div>
+  </div>
+
+  <!-- 2. ONE-SENTENCE HOOK -->
+  <div class="section">
+    <p class="section-number">Section 02</p>
+    <h2>One-Sentence Hook</h2>
+    <div class="card">
+      <p style="font-size:1.1rem; font-weight:800; color:var(--ink); font-style:italic;">"Tap to flip between the ceiling and floor of a cozy apartment, and dodge an endless rain of falling cats."</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Why this hook works</div>
+      <ul>
+        <li>Explainable in under 5 words: "tap to flip, dodge cats"</li>
+        <li>The premise is immediately funny and memorable</li>
+        <li>Players understand the core loop before touching the keyboard</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 3. PLAYER GOAL -->
+  <div class="section">
+    <p class="section-number">Section 03</p>
+    <h2>Player Goal</h2>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">Immediate goal</div>
+        <p>Survive as long as possible without being hit by a falling cat.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Session goal</div>
+        <p>Beat your personal high score. Each run lasts 30 seconds to 3 minutes.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Emotional goal</div>
+        <p>Feel the chaos of a cat-filled apartment — panicked, frantic, and a little funny.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">No story needed</div>
+        <p>You are a tiny rat. Cats fall. That's all the context the game needs.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. MAIN CONTROL -->
+  <div class="section">
+    <p class="section-number">Section 04</p>
+    <h2>Main Control</h2>
+    <div class="highlight-card">
+      <div class="card-title">The one input</div>
+      <p><strong style="color:var(--cream); font-size:1rem;">TAP / CLICK / SPACEBAR</strong> — instantly flips the rat between the floor and ceiling.</p>
+      <p style="margin-top:0.5rem;">No holding. No double-tap. No direction keys. One input, two positions. That is the entire control scheme.</p>
+    </div>
+    <div class="grid2" style="margin-top:0.75rem;">
+      <div class="card">
+        <div class="card-title">Floor position</div>
+        <p>Rat clings to the bottom of the screen. Cats fall from the top and land on the floor — danger zone.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Ceiling position</div>
+        <p>Rat clings to the top of the screen. Cats fall from the bottom edge upward — less common, keeps player alert.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. CORE MECHANIC -->
+  <div class="section">
+    <p class="section-number">Section 05</p>
+    <h2>Core Mechanic</h2>
+    <div class="card">
+      <div class="card-title">The flip</div>
+      <p>The player character (a pixel rat) exists in exactly one of two vertical positions at all times: floor or ceiling. One tap switches between them instantly. There is no gravity arc, no jump curve, no physics to tune. It is a boolean state toggle.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Why this is the right mechanic for beginners</div>
+      <ul>
+        <li>Two positions = one boolean variable (<code>isOnFloor: true/false</code>)</li>
+        <li>No physics engine required — just set Y position on tap</li>
+        <li>Collision detection is a single rectangle overlap check</li>
+        <li>Entire mechanic can be coded in under 30 lines</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 6. CORE GAMEPLAY LOOP -->
+  <div class="section">
+    <p class="section-number">Section 06</p>
+    <h2>Core Gameplay Loop</h2>
+    <div class="loop-flow">
+      <span class="loop-step">Cat spawns at edge</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-step">Cat falls across screen</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-step">Player taps to flip</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-step">Hit or survive</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-step">Score ticks up</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-step">Next cat spawns faster</span>
+    </div>
+    <div class="card" style="margin-top:0.75rem;">
+      <div class="card-title">Full loop breakdown</div>
+      <ul>
+        <li><strong>Start:</strong> Rat appears on floor. A cat spawns at screen edge with a 1-second warning frame.</li>
+        <li><strong>Play:</strong> Cats fall from top or bottom, scrolling left to right. Player flips to dodge.</li>
+        <li><strong>Score:</strong> +1 point per second survived. +5 bonus for each cat dodged cleanly.</li>
+        <li><strong>Escalation:</strong> Spawn rate increases every 10 seconds. No new rules — just more cats.</li>
+        <li><strong>Death:</strong> One hit = game over. Score displayed. One tap to restart.</li>
+        <li><strong>Restart:</strong> Instant. No menus. Full loop restarts in under 2 seconds.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 7. OBSTACLES -->
+  <div class="section">
+    <p class="section-number">Section 07</p>
+    <h2>Obstacles</h2>
+    <p style="font-size:13px; color:var(--ink-soft); margin-bottom:1rem;">Ship with Cat Type 1 only. Add Types 2 and 3 in the polish phase if time allows.</p>
+    <div class="grid3">
+      <div class="card">
+        <span class="badge b-sage">Type 1 · Default</span>
+        <div class="card-title" style="margin-top:0.5rem;">Splayed Cat</div>
+        <p>Falls at medium speed, straight line. Arms and legs spread out. The standard obstacle. 16×16px sprite, 2-frame tumble animation.</p>
+      </div>
+      <div class="card">
+        <span class="badge b-biscuit">Type 2 · Polish</span>
+        <div class="card-title" style="margin-top:0.5rem;">Ghost Puff Cat</div>
+        <p>Drifts slowly, wobbles left and right slightly. Harder to predict. Same collision box as Splayed Cat — only the sprite and speed differ.</p>
+      </div>
+      <div class="card">
+        <span class="badge b-rose">Type 3 · Polish</span>
+        <div class="card-title" style="margin-top:0.5rem;">Screaming Calico</div>
+        <p>Falls fast. A screaming open-mouth frame appears at spawn edge 0.5s before it drops — acts as a warning and a hazard all at once.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:0.75rem;">
+      <div class="card-title">Spawn warning system</div>
+      <p>Before each cat falls, briefly show the screaming cat frame at the edge of the screen for 0.5–1 second. This gives the player a reaction window without needing UI alerts. Visual only — no sound cue required for prototype.</p>
+    </div>
+  </div>
+
+  <!-- 8. SCORING SYSTEM -->
+  <div class="section">
+    <p class="section-number">Section 08</p>
+    <h2>Scoring System</h2>
+    <div class="card">
+      <table class="scope-table">
+        <tr><th>Event</th><th>Points</th></tr>
+        <tr><td>Surviving each second</td><td>+1 point</td></tr>
+        <tr><td>Clean cat dodge (no near-miss)</td><td>+5 bonus</td></tr>
+        <tr><td>Every 10-second milestone</td><td>+10 bonus</td></tr>
+        <tr><td>Getting hit</td><td>Game over — no partial score</td></tr>
+      </table>
+    </div>
+    <div class="grid2" style="margin-top:0.75rem;">
+      <div class="card">
+        <div class="card-title">High score display</div>
+        <p>Current score top-center in chunky pixel font. Personal best shown below in smaller muted text. No online leaderboard in prototype.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Score storage</div>
+        <p>Save high score to <code>localStorage</code>. Persists between sessions in the browser. No backend needed.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. FAIL CONDITION -->
+  <div class="section">
+    <p class="section-number">Section 09</p>
+    <h2>Fail Condition</h2>
+    <div class="highlight-card">
+      <div class="card-title">One rule</div>
+      <p>A cat's hitbox overlaps the rat's hitbox. One hit = instant death. No health bar, no lives, no second chances.</p>
+      <p style="margin-top:0.75rem;"><strong style="color:var(--sage);">Hitbox tip:</strong> Make the rat hitbox 2–3 pixels smaller than the visible sprite on each side. This creates a forgiving "feel" without changing the rules — players will feel they barely survived rather than unfairly hit.</p>
+    </div>
+    <div class="card" style="margin-top:0.75rem;">
+      <div class="card-title">Game over screen — keep it minimal</div>
+      <ul>
+        <li>One large splayed cat sprite (the one that got you)</li>
+        <li>Your score in big pixel font</li>
+        <li>Personal best below it</li>
+        <li>"TAP TO TRY AGAIN" prompt — that is all</li>
+        <li>No animations, no share button, no menus in prototype</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 10. DIFFICULTY PROGRESSION -->
+  <div class="section">
+    <p class="section-number">Section 10</p>
+    <h2>Difficulty Progression</h2>
+    <div class="card">
+      <div class="card-title">One variable controls everything: spawn rate</div>
+      <p>Do not add new mechanics over time. Simply reduce the gap between cat spawns. The player's brain has to process the same action faster — that is difficulty.</p>
+    </div>
+    <div class="card" style="margin-top:0.75rem;">
+      <table class="scope-table">
+        <tr><th>Time survived</th><th>Spawn interval</th><th>Feel</th></tr>
+        <tr><td>0 – 10 seconds</td><td>Every 2.5s</td><td>Relaxed, learning</td></tr>
+        <tr><td>10 – 25 seconds</td><td>Every 1.8s</td><td>Comfortable rhythm</td></tr>
+        <tr><td>25 – 45 seconds</td><td>Every 1.2s</td><td>Urgent, sweating</td></tr>
+        <tr><td>45 – 60 seconds</td><td>Every 0.8s</td><td>Frantic, barely coping</td></tr>
+        <tr><td>60+ seconds</td><td>Every 0.5s (cap)</td><td>Maximum chaos — humanly possible but brutal</td></tr>
+      </table>
+    </div>
+    <div class="card" style="margin-top:0.75rem;">
+      <div class="card-title">Polish phase addition: top/bottom alternation</div>
+      <p>In the first 20 seconds, cats only fall from the top. After that, occasionally spawn a cat from the bottom too. This keeps experienced players from settling into a single strategy without adding any new code — just change the spawn origin Y value.</p>
+    </div>
+  </div>
+
+  <!-- 11. VISUAL STYLE -->
+  <div class="section">
+    <p class="section-number">Section 11</p>
+    <h2>Visual Style</h2>
+    <div class="card">
+      <div class="card-title">Palette — 8 colors maximum</div>
+      <div class="swatch-row">
+        <div class="swatch"><div class="swatch-dot" style="background:#FAF3E8;"></div><span class="swatch-label">Cream BG</span></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#F4A8A8;"></div><span class="swatch-label">Dusty Rose</span></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#B8D9B2;"></div><span class="swatch-label">Sage</span></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#E8C9A0;"></div><span class="swatch-label">Biscuit</span></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#2C2416;"></div><span class="swatch-label">Soft Black</span></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#FFFDF8;"></div><span class="swatch-label">Off-White</span></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#E8604A;"></div><span class="swatch-label">Tomato</span></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#C9A87C;"></div><span class="swatch-label">Calico Tan</span></div>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:0.75rem;">
+      <div class="card">
+        <div class="card-title">Sprite rules</div>
+        <ul>
+          <li>16×16px sprites, no anti-aliasing</li>
+          <li>1px soft-black outlines (#2C2416, not #000000)</li>
+          <li>2-frame animations maximum per sprite</li>
+          <li>Dot eyes, blush cheeks on all characters</li>
+          <li>Splayed limbs convey falling — no in-between frames</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Background rules</div>
+        <ul>
+          <li>Flat two-color split: cream top half, sage bottom half</li>
+          <li>One decorative shelf silhouette — non-interactive, back layer</li>
+          <li>No parallax. No scrolling. Static background only.</li>
+          <li>Window in corner: shifts cream → amber → dark at score milestones (day/dusk/night)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Typography</div>
+        <ul>
+          <li>Chunky bitmap pixel font for all in-game text</li>
+          <li>Score: top-center, large, cream color on dark pill</li>
+          <li>Game over text: centered, 2–3 lines maximum</li>
+          <li>No decorative fonts or mixed typefaces</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">UI philosophy</div>
+        <ul>
+          <li>HUD: score only. Nothing else during play.</li>
+          <li>Lives display: 3 tiny cat-paw icons (polish phase)</li>
+          <li>No health bars, no timers, no combo counters in prototype</li>
+          <li>If it doesn't affect survival, it doesn't go on screen</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. SOUND EFFECTS -->
+  <div class="section">
+    <p class="section-number">Section 12</p>
+    <h2>Sound Effects</h2>
+    <p style="font-size:13px; color:var(--ink-soft); margin-bottom:1rem;">All sounds are optional for the prototype. Add them in Day 2 or 3. Use free 8-bit sound tools like <strong>jsfxr</strong> or <strong>Bfxr</strong> to generate them in minutes.</p>
+    <div class="card">
+      <table class="scope-table">
+        <tr><th>Event</th><th>Sound description</th><th>Priority</th></tr>
+        <tr><td>Player flip</td><td>Short soft "boop" — low to high pitch</td><td><span class="badge b-sage">Day 1</span></td></tr>
+        <tr><td>Cat hits player</td><td>Cartoon "splat" — descending squish</td><td><span class="badge b-sage">Day 1</span></td></tr>
+        <tr><td>Cat spawn warning</td><td>Quick "meow" chirp — 0.3 seconds</td><td><span class="badge b-biscuit">Day 2</span></td></tr>
+        <tr><td>Score milestone</td><td>Ascending 3-note chime</td><td><span class="badge b-biscuit">Day 2</span></td></tr>
+        <tr><td>Background music</td><td>Looping lo-fi 8-bit ambient track</td><td><span class="badge b-rose">Day 3</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 13. MINIMUM PROTOTYPE SCOPE -->
+  <div class="section">
+    <p class="section-number">Section 13</p>
+    <h2>Minimum Prototype Scope</h2>
+    <p style="font-size:13px; color:var(--ink-soft); margin-bottom:1rem;">This is the smallest version of the game that is still fun to play. Build only this on Day 1.</p>
+    <div class="card">
+      <table class="scope-table">
+        <tr><th>Feature</th><th>Spec</th></tr>
+        <tr><td>Player character</td><td>1 sprite (rat), 2 positions (floor / ceiling), 1-tap flip</td></tr>
+        <tr><td>Obstacle</td><td>1 cat type (Splayed Cat), falls top-to-bottom, constant speed</td></tr>
+        <tr><td>Collision</td><td>Rectangle overlap check only — no pixel-perfect needed</td></tr>
+        <tr><td>Scoring</td><td>+1 per second, displayed top-center</td></tr>
+        <tr><td>Fail condition</td><td>1 hit = game over screen with score + tap to restart</td></tr>
+        <tr><td>Difficulty</td><td>Spawn rate speeds up every 10 seconds (one variable)</td></tr>
+        <tr><td>Background</td><td>Flat cream/sage split — no decorations</td></tr>
+        <tr><td>Sound</td><td>Optional — flip boop and death splat only</td></tr>
+        <tr><td>High score</td><td>Stored in localStorage</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 14. 1-DAY BUILD PLAN -->
+  <div class="section">
+    <p class="section-number">Section 14</p>
+    <h2>1-Day Build Plan</h2>
+    <div class="day-plan">
+      <div class="day-label">Morning · Setup &amp; Core Loop (3–4 hours)</div>
+      <ul>
+        <li>Create canvas or game scene — set background to flat cream/sage</li>
+        <li>Draw rat sprite at floor position (placeholder rectangle is fine)</li>
+        <li>Add tap/click/spacebar listener that toggles player Y position instantly</li>
+        <li>Spawn a cat rectangle at the right edge every 2.5 seconds</li>
+        <li>Move cat leftward across screen each frame, despawn when off-screen</li>
+      </ul>
+    </div>
+    <div class="day-plan day2">
+      <div class="day-label">Afternoon · Collision, Score &amp; Game Over (2–3 hours)</div>
+      <ul>
+        <li>Add rectangle collision check between cat and rat</li>
+        <li>On collision: stop game, show score on game over screen</li>
+        <li>Add +1 score per second counter displayed on screen</li>
+        <li>Add tap-to-restart that resets all variables and replays immediately</li>
+        <li>Save and display high score using localStorage</li>
+      </ul>
+    </div>
+    <div class="day-plan day3">
+      <div class="day-label">Evening · Difficulty, Start Screen &amp; First Playtest (1–2 hours)</div>
+      <ul>
+        <li>Add spawn rate variable that decreases by 0.3s every 10 seconds (cap at 0.5s)</li>
+        <li>Replace placeholder rectangles with actual pixel sprites (use your rat reference sheet)</li>
+        <li>Add start screen: game title + "TAP TO START" — you already have the layout sketched</li>
+        <li>Add flip boop and death splat sounds (use jsfxr, takes 5 minutes)</li>
+        <li>Play 10 runs yourself. Adjust feel. Ship it.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 15. 3-DAY POLISH PLAN -->
+  <div class="section">
+    <p class="section-number">Section 15</p>
+    <h2>3-Day Polish Plan</h2>
+    <p style="font-size:13px; color:var(--ink-soft); margin-bottom:1rem;">Only attempt this after Day 1 prototype is fully working. Polish one thing at a time.</p>
+    <div class="day-plan">
+      <div class="day-label">Day 2 · Feel &amp; Juice</div>
+      <ul>
+        <li>Add spawn warning: screaming cat frame at screen edge for 0.5s before drop</li>
+        <li>Add 2-frame tumble animation to falling cat sprite</li>
+        <li>Add screen shake (3px, 200ms) on death hit</li>
+        <li>Add cat-spawn "meow" chirp sound</li>
+        <li>Reduce rat hitbox by 2–3px on each side for forgiving feel</li>
+        <li>Add score milestone chime at 10, 25, 50 points</li>
+      </ul>
+    </div>
+    <div class="day-plan day2">
+      <div class="day-label">Day 3 · Visual Atmosphere &amp; Variety</div>
+      <ul>
+        <li>Add decorative shelf silhouette to background (non-interactive)</li>
+        <li>Add window corner graphic that shifts: cream → amber → dark at 25 / 50 / 100 pts</li>
+        <li>Add Ghost Puff Cat as a second obstacle type (slower, slight wobble)</li>
+        <li>Add bottom-spawn cats after 20 seconds of survival</li>
+        <li>Add looping 8-bit ambient background music</li>
+        <li>Polish start screen visuals: decorative background, animated title, cat silhouettes</li>
+        <li>Test on mobile browser. Ensure tap input works on touchscreen.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 16. FEATURES TO CUT -->
+  <div class="section">
+    <p class="section-number">Section 16</p>
+    <h2>Features to Cut</h2>
+    <p style="font-size:13px; color:var(--ink-soft); margin-bottom:1rem;">If you find yourself building any of the following, stop and return to the prototype. These all sound fun — they will also double your build time and break your scope.</p>
+
+    <div class="cut-item">
+      <div class="cut-x">✕</div>
+      <p><strong>Multiplayer.</strong> Even local two-player doubles every system: two players, two positions, two collision checks, two score displays. Cut entirely.</p>
+    </div>
+    <div class="cut-item">
+      <div class="cut-x">✕</div>
+      <p><strong>Unlockable characters or skins.</strong> Requires a save system, a menu, and inventory logic. None of that belongs in a 3-day build.</p>
+    </div>
+    <div class="cut-item">
+      <div class="cut-x">✕</div>
+      <p><strong>Online leaderboard.</strong> Requires a backend, an API, and authentication. Use localStorage only for the prototype.</p>
+    </div>
+    <div class="cut-item">
+      <div class="cut-x">✕</div>
+      <p><strong>Power-ups or collectibles.</strong> A shield, a magnet, a slow-down item — each one is a new system. The game is good enough without them.</p>
+    </div>
+    <div class="cut-item">
+      <div class="cut-x">✕</div>
+      <p><strong>Levels or stages.</strong> Kitty Drop is an endless arcade game. There are no levels. Difficulty is one spawn-rate variable — not a level design problem.</p>
+    </div>
+    <div class="cut-item">
+      <div class="cut-x">✕</div>
+      <p><strong>Parallax scrolling background.</strong> Looks great, adds zero gameplay value, and takes a full afternoon to implement correctly. Flat background only.</p>
+    </div>
+    <div class="cut-item">
+      <div class="cut-x">✕</div>
+      <p><strong>More than 3 cat types.</strong> One cat type ships a working game. Three is generous. Beyond that you are writing a cat management system, not a game.</p>
+    </div>
+    <div class="cut-item">
+      <div class="cut-x">✕</div>
+      <p><strong>A story, a tutorial, or an intro cutscene.</strong> The game teaches itself in 3 seconds of play. Any tutorial you add is longer than the tutorial the player needs.</p>
+    </div>
+  </div>
+
+  <div style="text-align:center; padding: 1rem 0 0.5rem;">
+    <div class="paw-divider">≽ ≽ ≽</div>
+    <div class="highlight-card" style="max-width:520px; margin:0 auto;">
+      <div class="card-title">The golden rule</div>
+      <p style="font-style:italic; color:var(--cream);">"If you can't explain the new feature in one sentence, and code it in under an hour, cut it and ship what you have."</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  KITTY DROP · GAME DESIGN DOCUMENT · v1.0 · BUILD IT · SHIP IT · ADD CATS
+</footer>
+
+</body>
+</html>
